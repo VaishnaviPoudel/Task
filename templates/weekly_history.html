@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h3 class="mb-4">Weekly Water Intake History</h3>
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <table class="table table-bordered table-striped">
+            <thead class="table-primary">
+                <tr>
+                    <th>Date</th>
+                    <th>Water Intake (ml)</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for entry in history %}
+                <tr class="{% if entry.met_goal %}table-success{% else %}table-danger{% endif %}">
+                    <td>{{ entry.date|date:"M d, D" }}</td>
+                    <td>{{ entry.amount }}</td>
+                    <td>
+                        {% if entry.met_goal %}
+                            ✅ Well done!!
+                        {% else %}
+                            ❌ Oops! Missed Goal
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <p><strong>Daily Goal:</strong> {{ goal }} ml</p>
+    </div>
+</div>
+
+{% endblock %}
