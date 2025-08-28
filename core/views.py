@@ -1,3 +1,5 @@
+DEFAULT_DAILY_GOAL=2000
+
 from django.shortcuts import render, redirect
 from .models import WaterIntake, WaterIntakeGoal
 from .forms import WaterIntakeForm, WaterIntakeGoalForm, UserRegistrationForm, LoginForm
@@ -10,19 +12,33 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 
 
-@login_required
 def home(request):
-    total_intake = todays_intake(request.user)
-    daily_goal = get_user_goal(request.user)
-    remaining = daily_goal - total_intake if daily_goal > total_intake else 0
+    if request.user.is_authenticated:
+        total_intake = todays_intake(request.user)
+        daily_goal = get_user_goal(request.user)
+        remaining = daily_goal - total_intake if daily_goal > total_intake else 0
+        show_welcome = request.session.pop('just_logged_in', False)
+        goal_completed = total_intake >= daily_goal
 
 
-    context = {
-        'total_intake': total_intake,
-        'daily_goal': daily_goal,
-        'remaining': remaining
+        context = {
+            'total_intake': total_intake,
+            'daily_goal': daily_goal,
+            'remaining': remaining,
+            'show_welcome': show_welcome,
+            'goal_completed': goal_completed
+            
+            }
+    else:
+        context = {
+            'total_intake': 0,
+            'daily_goal': DEFAULT_DAILY_GOAL,
+            'remaining': 0,
+            'show_welcome': False,
+            'goal_completed': False
 
-    }
+        }
+
     return render(request, 'home.html', context)
 
 def todays_intake(user):
@@ -39,7 +55,7 @@ def get_user_goal(user):
     try:
         return WaterIntakeGoal.objects.get(user=user).daily_goal_amount
     except WaterIntakeGoal.DoesNotExist:
-        return 2000  
+        return DEFAULT_DAILY_GOAL  
     
 
 @login_required
@@ -49,9 +65,17 @@ def add_water_intake(request):
         if form.is_valid():
             intake = form.save(commit=False)
             intake.user = request.user
+            previous_total = todays_intake(request.user)
             intake.save()
-            messages.success(request, 'Water intake added successfully!')
-            return redirect('add_water_intake')
+            total = previous_total + intake.amount
+
+            goal = get_user_goal(request.user)
+            if previous_total < goal <= total:
+                messages.success(request, 'You reached your daily goal!')
+            elif total < goal:
+                messages.success(request, 'Water intake added successfully!')
+
+            return redirect('home')
     else:
         form = WaterIntakeForm()
 
@@ -139,6 +163,8 @@ def login_page(request):
             user = authenticate(request, username=username, password=password)
             if user is not None:
                 login(request, user)
+                request.session['just_logged_in'] = True
+
                 return redirect('home')
             else:
                 messages.error(request, "Invalid username or password.")
@@ -150,4 +176,5 @@ def login_page(request):
 
 def logout_page(request):
     logout(request)
-    return redirect('login_page')
+    messages.success(request, "You have been logged out successfully.")
+    return redirect('home')

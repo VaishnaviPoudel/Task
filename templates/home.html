@@ -2,12 +2,21 @@
 {% block content %}
 
 <div class="container mt-6">
-  {% if user.is_authenticated %}
-    <h2 class="text-center">Welcome, {{ user.username }}</h2>
+  {% if show_welcome %}
+    <h2 class="text-center">Welcome {{ request.user.username }}</h2>
   {% endif %}
+
   <h6>
     Take your daily Water Intake & Stay Hydrated 
   </h6>
+  {% if goal_completed %}
+    {% for message in messages %}
+        <div class="alert {{message.tags}}">
+        {{message}}    
+        </div>
+    {% endfor %}
+  {% endif %}
+
   <div class="row">
     <div class="col-md-6">
       <div class="card shadow-sm p-4">
@@ -85,5 +94,4 @@
     }
   });
 </script>
-
-{% endblock %}
+{% endblock%}
