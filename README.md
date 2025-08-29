@@ -15,7 +15,7 @@ A simple Django web application to help users track their daily water intake, se
 
 ---
 
-## 🛠 Tech Stack
+## Tech Stack
 
 - Python 3
 - Django
@@ -28,7 +28,7 @@ A simple Django web application to help users track their daily water intake, se
 ### Prerequisites
 
 - Python 3.x installed
-- (Optional) Virtual environment tool like `venv` or `virtualenv`
+- Virtual environment tool like `venv` or `virtualenv`
 
 ### Installation & Setup
 
