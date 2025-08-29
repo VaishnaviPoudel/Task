@@ -1,4 +1,4 @@
-# Water Intake Tracker 💧
+# Water Intake Tracker 
 
 A simple Django web application to help users track their daily water intake, set personalized hydration goals, and monitor their weekly progress.
 
@@ -35,7 +35,7 @@ A simple Django web application to help users track their daily water intake, se
 1. **Clone the repository:**
 
    ```bash
-   git clone https://github.com/your-username/WaterIntakeTracker.git
+   git clone https://github.com/VaishnaviPoudel/WaterIntakeTracker.git
    cd WaterIntakeTracker
    ```
 
